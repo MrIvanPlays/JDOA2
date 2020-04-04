@@ -1,7 +1,7 @@
 ![license](https://img.shields.io/github/license/MrIvanPlays/JDOA2.svg?style=for-the-badge)
 ![issues](https://img.shields.io/github/issues/MrIvanPlays/JDOA2.svg?style=for-the-badge)
 [![support](https://img.shields.io/discord/493674712334073878.svg?colorB=Blue&logo=discord&label=Support&style=for-the-badge)](https://mrivanplays.com/discord)
-![version](https://img.shields.io/maven-metadata/v?color=blue&label=latest%20version&metadataUrl=https%3A%2F%2Frepo.mrivanplays.com%2Frepository%2Fivan%2Fcom%2Fmrivanplays%2FJDOA2%2Fmaven-metadata.xml&style=for-the-badge)
+![version](https://img.shields.io/maven-metadata/v?color=blue&label=latest%20version&metadataUrl=https%3A%2F%2Frepo.mrivanplays.com%2Frepository%2Fivan-snapshots%2Fcom%2Fmrivanplays%2Fjdoa2%2Fmaven-metadata.xml&style=for-the-badge)
 # JDOA2
 
 Discord OAuth2 API wrapper for Java, for creating apps using discord account as authentication.
@@ -75,4 +75,4 @@ public class TestController {
 ```
 
 # Javadocs
-Soon
+Can be found [here](https://mrivanplays.com/javadocs/JDOA2/com/mrivanplays/jdoa2/package-summary.html)
