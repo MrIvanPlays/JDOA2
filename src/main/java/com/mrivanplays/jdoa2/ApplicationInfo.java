@@ -38,10 +38,12 @@ public final class ApplicationInfo {
      * discord application config.
      * <p>
      * Example of what you need to specify here:
-     *     1. Open your discord application config
-     *     2. Navigate to OAuth2
-     *     3. Add redirect url and save
-     *     4. Generate OAuth2 link with the supported scopes: identify, email, guilds
+     * <ol>
+     *     <li>Open your discord application config</li>
+     *     <li>Navigate to OAuth2</li>
+     *     <li>Add redirect url and save</li>
+     *     <li>Generate OAuth2 link with the supported scopes: identify, email, guilds</li>
+     * </ol>
      * After doing all the steps, try using the URL you created. If everything was done correctly, after allowing the
      * application by discord your browser will auto redirect you to your callback url and will append
      * "?code=AUTHENTICATION CODE" to the url, the "authentication code" specified is your authentication code that you
