@@ -6,6 +6,11 @@
 
 Discord OAuth2 API wrapper for Java, for creating apps using discord account as authentication.
 
+# Information
+Important thing to know is that the library only supports discord scopes "identify, guilds, email". 
+
+Please see ApplicationInfo#getAuthCode to understand how actually to implement your discord application with this library.
+
 # Installation
 
 Installing JDOA2 is just like every other dependency:
