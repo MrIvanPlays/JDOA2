@@ -32,7 +32,7 @@ public class JDOA2Utils {
     public static String AUTHOR = "MrIvanPlays";
 
     /**
-     * Returns whenever the specified {@link String} contains into the specified {@link String[] String[]}.
+     * Returns whenever the specified {@link String} contains into the specified {@link String} array.
      *
      * @param s    string, checked if contains
      * @param sArr the array which is checked if the string contains
