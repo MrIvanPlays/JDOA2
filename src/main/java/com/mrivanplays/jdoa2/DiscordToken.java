@@ -1,6 +1,7 @@
 package com.mrivanplays.jdoa2;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.annotation.Nonnull;
@@ -85,5 +86,16 @@ public class DiscordToken {
     @Nonnull
     public String getScope() {
         return scope;
+    }
+
+    /**
+     * Parses the scopes to a json array, for easily iterating thru them.
+     *
+     * @return scope array
+     */
+    @Nonnull
+    @JsonIgnore
+    public String[] parseScopes() {
+        return scope.split(" ");
     }
 }

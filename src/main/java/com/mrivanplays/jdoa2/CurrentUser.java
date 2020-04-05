@@ -1,46 +1,30 @@
 package com.mrivanplays.jdoa2;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
  * Represents the user this application is running for.
  */
-public class CurrentUser {
+public class CurrentUser implements ISnowflake {
 
     private String id;
     private String username;
     private String discriminator;
     private String avatar;
-    private boolean bot;
-
-    @JsonProperty("mfa_enabled")
     private boolean twoFAEnabled;
-
     private boolean verified;
     private String email;
     private String locale;
     private int flags;
 
-    @JsonCreator
-    public CurrentUser(@JsonProperty("id") String id,
-                       @JsonProperty("username") String username,
-                       @JsonProperty("discriminator") String discriminator,
-                       @JsonProperty("avatar") String avatar,
-                       @JsonProperty("bot") boolean bot,
-                       @JsonProperty("mfa_enabled") boolean twoFAEnabled,
-                       @JsonProperty("verified") boolean verified,
-                       @JsonProperty("email") String email,
-                       @JsonProperty("locale") String locale,
-                       @JsonProperty("flags") int flags) {
+    public CurrentUser(String id, String username, String discriminator,
+                       String avatar, boolean twoFAEnabled, boolean verified,
+                       String email, String locale, int flags) {
         this.id = id;
         this.username = username;
         this.discriminator = discriminator;
         this.avatar = avatar;
-        this.bot = bot;
         this.twoFAEnabled = twoFAEnabled;
         this.verified = verified;
         this.email = email;
@@ -49,11 +33,10 @@ public class CurrentUser {
     }
 
     /**
-     * Returns the user's id. This should be used as a unique identifier of the user, as other things may change.
-     *
-     * @return user id
+     * {@inheritDoc}
      */
     @Nonnull
+    @Override
     public String getId() {
         return id;
     }
@@ -91,12 +74,35 @@ public class CurrentUser {
     }
 
     /**
+     * Returns the user's default avatar icon hash.
+     *
+     * @return default avatar icon hash
+     */
+    @Nonnull
+    public String getDefaultAvatar() {
+        String[] defAvatars = JDOA2Utils.DEFAULT_AVATARS;
+        return defAvatars[Integer.parseInt(discriminator) % defAvatars.length];
+    }
+
+    /**
+     * Returns the user's effective avatar icon hash, effective meaning currently applied.
+     *
+     * @return currently applied avatar icon hash
+     */
+    @Nonnull
+    public String getEffectiveAvatar() {
+        return avatar == null ? getDefaultAvatar() : avatar;
+    }
+
+    /**
      * Returns whenever the current user is a bot.
      *
      * @return <code>true</code> if bot, <code>false</code> otherwise
+     * @deprecated Due to the nature of OAuth2 at this moment, bots are not allowed to use the various urls provided.
      */
+    @Deprecated
     public boolean isBot() {
-        return bot;
+        return false;
     }
 
     /**
@@ -118,11 +124,11 @@ public class CurrentUser {
     }
 
     /**
-     * Returns the email of the user.
+     * Returns the email of the user, if so we have the scope provided.
      *
      * @return email
      */
-    @Nonnull
+    @Nullable
     public String getEmail() {
         return email;
     }
@@ -137,13 +143,25 @@ public class CurrentUser {
         return locale;
     }
 
-    // todo: better documentation on this
     /**
-     * Returns flags.
+     * Returns bitwise calculated flags.
+     * <p>
+     * See: <a href="https://discordapp.com/developers/docs/resources/user#user-object-user-flags">User flags (discord
+     * api documentation)</a>
      *
      * @return flags
      */
     public int getFlags() {
         return flags;
+    }
+
+    /**
+     * Gets the user as a discord formatted mention.
+     *
+     * @return mention
+     */
+    @Nonnull
+    public String getAsMention() {
+        return "<@" + id + ">";
     }
 }

@@ -1,6 +1,8 @@
 package com.mrivanplays.jdoa2.internal;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.github.natanbc.reliqua.Reliqua;
 import com.github.natanbc.reliqua.request.PendingRequest;
 import com.mrivanplays.jdoa2.ApplicationInfo;
@@ -8,9 +10,13 @@ import com.mrivanplays.jdoa2.CurrentUser;
 import com.mrivanplays.jdoa2.DiscordToken;
 import com.mrivanplays.jdoa2.Guild;
 import com.mrivanplays.jdoa2.JDOA2;
+import com.mrivanplays.jdoa2.JDOA2Utils;
+import com.mrivanplays.jdoa2.MissingScopeException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.Nonnull;
 
 import okhttp3.Call;
@@ -60,6 +66,11 @@ public class JDOA2Impl extends Reliqua implements JDOA2 {
         } else {
             return doTokenExchange();
         }
+    }
+
+    @Override
+    public Optional<DiscordToken> getCurrentToken() {
+        return Optional.ofNullable(token);
     }
 
     private DiscordToken doTokenExchange(RequestParams params) {
@@ -135,12 +146,36 @@ public class JDOA2Impl extends Reliqua implements JDOA2 {
                             (errorResponse.getMessage() == null ? "no message specified" : errorResponse.getMessage()));
                 }
             }
-            return jsonMapper.readValue(body, CurrentUser.class);
+            JsonNode node = jsonMapper.readTree(body);
+            return new CurrentUser(
+                    node.get("id").asText(),
+                    node.get("username").asText(),
+                    node.get("discriminator").asText(),
+                    optString(node, "avatar"),
+                    node.get("mfa_enabled").asBoolean(),
+                    optBoolean(node, "verified"),
+                    optString(node, "email"),
+                    node.get("locale").asText(),
+                    node.get("flags").asInt()
+            );
         }, null);
+    }
+
+    private String optString(JsonNode node, String path) {
+        JsonNode pathNode = node.get(path);
+        return pathNode == null ? null : pathNode.asText();
+    }
+
+    private boolean optBoolean(JsonNode node, String path) {
+        JsonNode pathNode = node.get(path);
+        return pathNode != null && pathNode.asBoolean();
     }
 
     @Override
     public PendingRequest<List<Guild>> getCurrentUserGuilds() {
+        if (!JDOA2Utils.contains("guilds", token.parseScopes())) {
+            throw new MissingScopeException("guilds");
+        }
         return createRequest(new Request.Builder()
                 .get()
                 .url(USER_GUILDS_URL)
@@ -158,7 +193,16 @@ public class JDOA2Impl extends Reliqua implements JDOA2 {
                             (errorResponse.getMessage() == null ? "no message specified" : errorResponse.getMessage()));
                 }
             }
-            return jsonMapper.readValue(body, GuildListHolder.class).getList();
+            ArrayNode arrayNode = (ArrayNode) jsonMapper.readTree(body);
+            List<Guild> guilds = new ArrayList<>();
+            for (JsonNode node : arrayNode) {
+                guilds.add(new Guild(node.get("id").asText(),
+                        node.get("name").asText(),
+                        optString(node, "icon"),
+                        node.get("owner").asBoolean(),
+                        node.get("permissions").asInt()));
+            }
+            return guilds;
         }, null);
     }
 

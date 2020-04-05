@@ -4,7 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.natanbc.reliqua.request.PendingRequest;
 
 import java.util.List;
-
+import java.util.Objects;
+import java.util.Optional;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -66,6 +67,13 @@ public interface JDOA2 {
     DiscordToken doTokenExchangeUsingRefreshToken();
 
     /**
+     * Returns the token this JDOA2 instance has last cached.
+     *
+     * @return last token
+     */
+    Optional<DiscordToken> getCurrentToken();
+
+    /**
      * Returns whenever the token we have is valid or not. You may want to check this every time before using any of the
      * information receiver methods, and if the token isn't valid you may want to call {@link
      * #doTokenExchangeUsingRefreshToken()}.
@@ -76,9 +84,6 @@ public interface JDOA2 {
 
     /**
      * Retrieves {@link CurrentUser} information, returning {@link PendingRequest}.
-     * <p>
-     * <b>WARNING: This is a thread blocking method, it may block the thread if the pending request is executed
-     * synchronously and the application is rate limited by discord api. CONSIDER COMPLETING ASYNCHRONOUSLY!!!!</b>
      *
      * @return pending request, containing current user information
      * @see PendingRequest
@@ -88,40 +93,43 @@ public interface JDOA2 {
     PendingRequest<CurrentUser> getCurrentUser();
 
     /**
-     * Returns the icon url of the user specified. Note that {@link CurrentUser#getAvatar()} returns an icon hash, not
-     * an url.
+     * Returns the icon url of the {@link CurrentUser} specified. Note that every avatar method in {@link CurrentUser}
+     * returns an icon hash, and not an url.
      *
      * @param user current user
      * @return icon url
      */
-    @Nullable
-    default String getUserAvatarUrl(CurrentUser user) {
-        if (user.getAvatar() == null) {
-            return null;
-        }
-        String iconId = user.getAvatar();
+    @Nonnull
+    default String getUserAvatarUrl(@Nonnull CurrentUser user) {
+        Objects.requireNonNull(user, "user");
+        String iconId = user.getEffectiveAvatar();
         return "https://cdn.discordapp.com/avatars/" + user.getId() + "/" + iconId + (iconId.startsWith("a_") ? ".gif" : ".png");
     }
 
+    /**
+     * Returns the icon url of the guild specified. Note that {@link Guild#getIcon()} returns an icon hash, not an url.
+     *
+     * @param guild guild
+     * @return icon url
+     */
     @Nullable
-    default String getGuildIconUrl(Guild guild) {
+    default String getGuildIconUrl(@Nonnull Guild guild) {
+        Objects.requireNonNull(guild, "guild");
         if (guild.getIcon() == null) {
             return null;
         }
         String iconId = guild.getIcon();
-        return "https://cdn.discordapp.com/icons/" + guild.getId() + "/" + iconId + (iconId.startsWith("a_")? ".gif" : ".png");
+        return "https://cdn.discordapp.com/icons/" + guild.getId() + "/" + iconId + (iconId.startsWith("a_") ? ".gif" : ".png");
     }
 
     /**
      * Retrieves a {@link List} of {@link Guild Guilds}, which the {@link CurrentUser} has joined in, returning {@link
-     * PendingRequest}
-     * <p>
-     * <b>WARNING: This is a thread blocking method, it may block the thread if the pending request is executed
-     * synchronously and the application is rate limited by discord api. CONSIDER COMPLETING ASYNCHRONOUSLY!!!!</b>
+     * PendingRequest}. Requires "guilds" scope.
      *
      * @return pending request, containing guilds information
      * @see PendingRequest
      * @see Guild
+     * @throws MissingScopeException if "guilds" scope wasn't specified
      */
     @CheckReturnValue
     PendingRequest<List<Guild>> getCurrentUserGuilds();

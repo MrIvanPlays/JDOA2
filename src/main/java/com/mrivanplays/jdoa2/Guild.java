@@ -10,7 +10,7 @@ import javax.annotation.Nullable;
  * Represents a guild object, holding information about the {@link CurrentUser CurrentUser's} state, and also holding
  * very basic information about the guild itself.
  */
-public class Guild {
+public class Guild implements ISnowflake {
 
     private String id;
     private String name;
@@ -32,12 +32,10 @@ public class Guild {
     }
 
     /**
-     * Returns the id of the guild. This should be used as a unique identifier of the guild, as other parameters can
-     * change.
-     *
-     * @return guild id
+     * {@inheritDoc}
      */
     @Nonnull
+    @Override
     public String getId() {
         return id;
     }
@@ -74,9 +72,11 @@ public class Guild {
         return owner;
     }
 
-    // todo: better documentation of this
     /**
-     * Returns the permission integer.
+     * Returns total permissions for the {@link CurrentUser} in this guild. You must have knowledge of binary and stuff
+     * in order to calculate them.
+     * <p>
+     * See: <a href="https://discordapp.com/developers/docs/topics/permissions">Permissions (discord api documentation)</a>
      *
      * @return permission
      */
