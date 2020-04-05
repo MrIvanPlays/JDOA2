@@ -39,6 +39,7 @@ public class JDOA2Impl extends Reliqua implements JDOA2 {
     private static final String USER_IDENTIFICATION_URL = BASE_API_URL + "/users/@me";
     private static final String USER_GUILDS_URL = USER_IDENTIFICATION_URL + "/guilds";
     private static final String TOKEN_BASE_URL = BASE_API_URL + "/oauth2/token";
+    private static final String USER_AGENT = "JDOA2 Oauth2(" + JDOA2Utils.GITHUB + " | " + JDOA2Utils.VERSION + ")";
 
     public JDOA2Impl(ApplicationInfo applicationInfo, ObjectMapper jsonMapper, OkHttpClient httpClient) {
         super(httpClient);
@@ -77,7 +78,7 @@ public class JDOA2Impl extends Reliqua implements JDOA2 {
         Request request = new Request.Builder()
                 .post(RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), params.toEncodedString()))
                 .url(TOKEN_BASE_URL)
-                .header("User-Agent", "Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11")
+                .header("User-Agent", USER_AGENT)
                 .build();
         Call call = getHttpClient().newCall(request);
         try (Response response = call.execute()) {
@@ -132,7 +133,7 @@ public class JDOA2Impl extends Reliqua implements JDOA2 {
         return createRequest(new Request.Builder()
                 .get()
                 .url(USER_IDENTIFICATION_URL)
-                .header("User-Agent", "Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11")
+                .header("User-Agent", USER_AGENT)
                 .header("Authorization", "Bearer " + token.getAccessToken())
         ).build((response) -> {
             String body = response.body().string();
@@ -179,7 +180,7 @@ public class JDOA2Impl extends Reliqua implements JDOA2 {
         return createRequest(new Request.Builder()
                 .get()
                 .url(USER_GUILDS_URL)
-                .header("User-Agent", "Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11")
+                .header("User-Agent", USER_AGENT)
                 .header("Authorization", "Bearer " + token.getAccessToken())
         ).build((response) -> {
             String body = response.body().string();
