@@ -79,7 +79,5 @@ public class TestController {
 }
 ```
 
-You can see the example application of JDOA2 [here](https://discordapp.com/api/oauth2/authorize?client_id=696257953493418035&redirect_uri=https%3A%2F%2Fjdoa2example.mrivanplays.com%2F&response_type=code&scope=identify%20email%20guilds)
-
 # Javadocs
 Can be found [here](https://mrivanplays.com/javadocs/JDOA2/com/mrivanplays/jdoa2/package-summary.html)
