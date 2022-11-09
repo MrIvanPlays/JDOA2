@@ -101,6 +101,6 @@ public class JDOA2Builder {
         if (jsonMapper == null) {
             jsonMapper = new ObjectMapper();
         }
-        return new JDOA2Impl(applicationInfo, jsonMapper, okHttpClient);
+        return new JDOA2Impl(this);
     }
 }

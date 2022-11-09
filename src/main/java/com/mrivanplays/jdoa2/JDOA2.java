@@ -48,6 +48,9 @@ public interface JDOA2 {
      * discord api. CONSIDER RUNNING ASYNCHRONOUSLY!!!!</b>
      *
      * @return token object
+     * @throws RateLimitedException    if the method wasn't able to block the thread and wait after "retry after".
+     * @throws AuthenticationException if something went wrong while contacting discord api, or we got an internal
+     *                                 error.
      * @see DiscordToken
      */
     @Nonnull
@@ -61,6 +64,9 @@ public interface JDOA2 {
      * discord api. CONSIDER RUNNING ASYNCHRONOUSLY!!!!</b>
      *
      * @return token object
+     * @throws RateLimitedException    if the method wasn't able to block the thread and wait after "retry after".
+     * @throws AuthenticationException if something went wrong while contacting discord api, or we got an internal
+     *                                 error.
      * @see DiscordToken
      */
     @Nonnull
@@ -84,8 +90,17 @@ public interface JDOA2 {
 
     /**
      * Retrieves {@link CurrentUser} information, returning {@link PendingRequest}.
+     * <p>
+     * Caching is recommended in order to not hit discord's rate limits. Due to the nature of the api, we currently
+     * cannot apply caching.
      *
      * @return pending request, containing current user information
+     * @throws MissingScopeException    if scope "identify" isn't present
+     * @throws NullPointerException     if no token exchange occurred.
+     * @throws IllegalArgumentException if the current token is invalid.
+     * @throws RateLimitedException     if rate limit was hit
+     * @throws AuthenticationException  if something went wrong while contacting discord api, or we got an internal
+     *                                  error
      * @see PendingRequest
      * @see CurrentUser
      */
@@ -111,25 +126,31 @@ public interface JDOA2 {
      *
      * @param guild guild
      * @return icon url
+     * @deprecated replaced by {@link Guild#getIconUrl()}
      */
     @Nullable
+    @Deprecated
     default String getGuildIconUrl(@Nonnull Guild guild) {
         Objects.requireNonNull(guild, "guild");
-        if (guild.getIcon() == null) {
-            return null;
-        }
-        String iconId = guild.getIcon();
-        return "https://cdn.discordapp.com/icons/" + guild.getId() + "/" + iconId + (iconId.startsWith("a_") ? ".gif" : ".png");
+        return guild.getIconUrl();
     }
 
     /**
      * Retrieves a {@link List} of {@link Guild Guilds}, which the {@link CurrentUser} has joined in, returning {@link
      * PendingRequest}. Requires "guilds" scope.
+     * <p>
+     * Caching is recommended in order to not hit discord's rate limits. Due to the nature of the api, we currently
+     * cannot apply caching.
      *
      * @return pending request, containing guilds information
+     * @throws MissingScopeException    if "guilds" scope wasn't specified
+     * @throws NullPointerException     if no token exchange occurred.
+     * @throws IllegalArgumentException if the current token is invalid.
+     * @throws RateLimitedException     if rate limit was hit
+     * @throws AuthenticationException  if something went wrong while contacting discord api, or we got an internal
+     *                                  error
      * @see PendingRequest
      * @see Guild
-     * @throws MissingScopeException if "guilds" scope wasn't specified
      */
     @CheckReturnValue
     PendingRequest<List<Guild>> getCurrentUserGuilds();

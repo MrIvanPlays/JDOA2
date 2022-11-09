@@ -1,8 +1,5 @@
 package com.mrivanplays.jdoa2;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -18,12 +15,7 @@ public class Guild implements ISnowflake {
     private boolean owner;
     private int permissions;
 
-    @JsonCreator
-    public Guild(@JsonProperty("id") String id,
-                 @JsonProperty("name") String name,
-                 @JsonProperty("icon") String icon,
-                 @JsonProperty("owner") boolean owner,
-                 @JsonProperty("permissions") int permissions) {
+    public Guild(String id, String name, String icon, boolean owner, int permissions) {
         this.id = id;
         this.name = name;
         this.icon = icon;
@@ -61,6 +53,19 @@ public class Guild implements ISnowflake {
     }
 
     /**
+     * Returns the guild's icon url, if the guild has icon.
+     *
+     * @return icon url
+     */
+    @Nullable
+    public String getIconUrl() {
+        if (icon == null) {
+            return null;
+        }
+        return "https://cdn.discordapp.com/icons/" + id + "/" + icon + (icon.startsWith("a_") ? ".gif" : ".png");
+    }
+
+    /**
      * Returns whenever the {@link CurrentUser} is owner of this guild.
      * <p>
      * A owner represents the user, who have created the guild, and not a user, which has a role which gives him most of
@@ -76,7 +81,8 @@ public class Guild implements ISnowflake {
      * Returns total permissions for the {@link CurrentUser} in this guild. You must have knowledge of binary and stuff
      * in order to calculate them.
      * <p>
-     * See: <a href="https://discordapp.com/developers/docs/topics/permissions">Permissions (discord api documentation)</a>
+     * See: <a href="https://discordapp.com/developers/docs/topics/permissions">Permissions (discord api
+     * documentation)</a>
      *
      * @return permission
      */

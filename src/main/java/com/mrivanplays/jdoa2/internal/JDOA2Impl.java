@@ -6,16 +6,20 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.github.natanbc.reliqua.Reliqua;
 import com.github.natanbc.reliqua.request.PendingRequest;
 import com.mrivanplays.jdoa2.ApplicationInfo;
+import com.mrivanplays.jdoa2.AuthenticationException;
 import com.mrivanplays.jdoa2.CurrentUser;
 import com.mrivanplays.jdoa2.DiscordToken;
 import com.mrivanplays.jdoa2.Guild;
 import com.mrivanplays.jdoa2.JDOA2;
+import com.mrivanplays.jdoa2.JDOA2Builder;
 import com.mrivanplays.jdoa2.JDOA2Utils;
 import com.mrivanplays.jdoa2.MissingScopeException;
+import com.mrivanplays.jdoa2.RateLimitedException;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 
@@ -41,10 +45,10 @@ public class JDOA2Impl extends Reliqua implements JDOA2 {
     private static final String TOKEN_BASE_URL = BASE_API_URL + "/oauth2/token";
     private static final String USER_AGENT = "JDOA2 Oauth2(" + JDOA2Utils.GITHUB + " | " + JDOA2Utils.VERSION + ")";
 
-    public JDOA2Impl(ApplicationInfo applicationInfo, ObjectMapper jsonMapper, OkHttpClient httpClient) {
-        super(httpClient);
-        this.applicationInfo = applicationInfo;
-        this.jsonMapper = jsonMapper;
+    public JDOA2Impl(JDOA2Builder builder) {
+        super(builder.httpClient());
+        this.applicationInfo = builder.applicationInfo();
+        this.jsonMapper = builder.jsonMapper();
     }
 
     @Override
@@ -94,7 +98,7 @@ public class JDOA2Impl extends Reliqua implements JDOA2 {
                     }
                     return doTokenExchange(params);
                 } else {
-                    throw new RuntimeException("Rate limited");
+                    throw new RateLimitedException("Rate limited");
                 }
             } else if (statusCode != 200) {
                 ErrorResponse errorResponse = jsonMapper.readValue(body, ErrorResponse.class);
@@ -130,6 +134,13 @@ public class JDOA2Impl extends Reliqua implements JDOA2 {
 
     @Override
     public PendingRequest<CurrentUser> getCurrentUser() {
+        if (!JDOA2Utils.contains("identify", token.parseScopes())) {
+            throw new MissingScopeException("identify");
+        }
+        Objects.requireNonNull(token, "No token exchange was started.");
+        if (!isCurrentTokenValid()) {
+            throw new IllegalArgumentException("Current token not valid.");
+        }
         return createRequest(new Request.Builder()
                 .get()
                 .url(USER_IDENTIFICATION_URL)
@@ -139,7 +150,7 @@ public class JDOA2Impl extends Reliqua implements JDOA2 {
             String body = response.body().string();
             int statusCode = response.code();
             if (statusCode == 429) {
-                throw new RuntimeException("Rate limited");
+                throw new RateLimitedException("Rate limited");
             } else if (statusCode != 200) {
                 ErrorResponse errorResponse = jsonMapper.readValue(body, ErrorResponse.class);
                 if (errorResponse.getError() != null) {
@@ -177,6 +188,10 @@ public class JDOA2Impl extends Reliqua implements JDOA2 {
         if (!JDOA2Utils.contains("guilds", token.parseScopes())) {
             throw new MissingScopeException("guilds");
         }
+        Objects.requireNonNull(token, "No token exchange was started.");
+        if (!isCurrentTokenValid()) {
+            throw new IllegalArgumentException("Current token not valid.");
+        }
         return createRequest(new Request.Builder()
                 .get()
                 .url(USER_GUILDS_URL)
@@ -186,7 +201,7 @@ public class JDOA2Impl extends Reliqua implements JDOA2 {
             String body = response.body().string();
             int responseCode = response.code();
             if (responseCode == 429) {
-                throw new RuntimeException("Rate limited");
+                throw new RateLimitedException("Rate limited");
             } else if (responseCode != 200) {
                 ErrorResponse errorResponse = jsonMapper.readValue(body, ErrorResponse.class);
                 if (errorResponse.getError() != null) {
