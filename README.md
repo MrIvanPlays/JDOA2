@@ -80,4 +80,4 @@ public class TestController {
 ```
 
 # Javadocs
-Can be found [here](https://mrivanplays.com/javadocs/JDOA2/com/mrivanplays/jdoa2/package-summary.html)
+Can be found [here](https://jd.mrivanplays/jdoa2/)
