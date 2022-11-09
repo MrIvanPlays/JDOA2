@@ -6,7 +6,7 @@
 
     <groupId>com.mrivanplays</groupId>
     <artifactId>jdoa2</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
 
     <name>JDOA2</name>
     <description>Discord OAuth2 API wrapper for Java, for creating user authorized apps.</description>
@@ -46,7 +46,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.13.4.1</version>
+            <version>2.14.0</version>
         </dependency>
     </dependencies>
 
@@ -78,7 +78,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-compiler-plugin</artifactId>
-                        <version>3.7.0</version>
+                        <version>3.10.1</version>
                         <configuration>
                             <source>1.8</source>
                             <target>1.8</target>
@@ -87,7 +87,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-shade-plugin</artifactId>
-                        <version>3.1.0</version>
+                        <version>3.4.1</version>
                         <executions>
                             <execution>
                                 <phase>package</phase>
@@ -100,7 +100,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
-                        <version>2.2.1</version>
+                        <version>3.2.1</version>
                         <executions>
                             <execution>
                                 <id>attach-sources</id>
@@ -113,7 +113,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.1.1</version>
+                        <version>3.4.1</version>
                         <configuration>
                             <!-- Fix generation on java 11+ -->
                             <source>8</source>
