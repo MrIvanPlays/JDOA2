@@ -39,7 +39,7 @@ public class JDOA2Impl extends Reliqua implements JDOA2 {
 
     private ApplicationInfo applicationInfo;
 
-    private static final String BASE_API_URL = "https://discordapp.com/api";
+    private static final String BASE_API_URL = "https://discord.com/api";
     private static final String USER_IDENTIFICATION_URL = BASE_API_URL + "/users/@me";
     private static final String USER_GUILDS_URL = USER_IDENTIFICATION_URL + "/guilds";
     private static final String TOKEN_BASE_URL = BASE_API_URL + "/oauth2/token";
@@ -129,7 +129,7 @@ public class JDOA2Impl extends Reliqua implements JDOA2 {
         if (token == null) {
             return false;
         }
-        return System.currentTimeMillis() > (this.tokenGeneratedIn + (token.getExpiresIn() * 1000));
+        return System.currentTimeMillis() < (this.tokenGeneratedIn + (token.getExpiresIn() * 1000));
     }
 
     @Override
